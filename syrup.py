@@ -13,8 +13,8 @@ import urllib.error
 import re
 import yaml
 
-# Load configuration
-CONFIG_FILE = pathlib.Path(__file__).parent / "config.yaml"
+CONFIG_DIR = pathlib.Path.home() / ".config" / "syrup"
+CONFIG_FILE = CONFIG_DIR / "config.yaml"
 DEFAULT_CONFIG = {
     "server": {"url": "http://localhost:8080"},
     "client": {
@@ -36,12 +36,20 @@ DEFAULT_CONFIG = {
     }
 }
 
+def ensure_config_exists():
+    """Create config directory and default config file if they don't exist."""
+    if not CONFIG_DIR.exists():
+        CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    if not CONFIG_FILE.exists():
+        with open(CONFIG_FILE, 'w') as f:
+            yaml.dump(DEFAULT_CONFIG, f, default_flow_style=False)
+
 def load_config():
     """Load configuration from config.yaml or use defaults."""
+    ensure_config_exists()
     if CONFIG_FILE.exists():
         with open(CONFIG_FILE, 'r') as f:
             config = yaml.safe_load(f)
-            # Merge with defaults to ensure all keys exist
             for key in DEFAULT_CONFIG:
                 if key not in config:
                     config[key] = DEFAULT_CONFIG[key]
