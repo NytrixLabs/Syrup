@@ -77,12 +77,7 @@ def get_user_by_token(token):
         FROM users u 
         JOIN tokens t ON u.id = t.user_id 
         WHERE t.token = ?
-    """, (token,))
-    user = cursor.fetchone()
-    conn.close()
-    return user
-
-def create_user(username, password_hash):
+        """)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     try:
