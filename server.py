@@ -29,6 +29,9 @@ def init_db():
             password_hash TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
+    """)
+    
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS tokens (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -36,6 +39,9 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id)
         )
+    """)
+    
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS packages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -44,6 +50,12 @@ def init_db():
             uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id)
         )
+    """)
+    
+    conn.commit()
+    conn.close()
+
+def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 def generate_token():
@@ -111,6 +123,12 @@ def get_package(username, name):
         FROM packages p 
         JOIN users u ON p.user_id = u.id 
         WHERE u.username = ? AND p.name = ?
+    """, (username, name))
+    package = cursor.fetchone()
+    conn.close()
+    return package
+
+def list_packages(username=None):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     if username:
@@ -119,10 +137,18 @@ def get_package(username, name):
             FROM packages p 
             JOIN users u ON p.user_id = u.id 
             WHERE u.username = ?
+        """, (username,))
+    else:
+        cursor.execute("""
             SELECT u.username, p.name, p.uploaded_at 
             FROM packages p 
             JOIN users u ON p.user_id = u.id
-    
+        """)
+    packages = cursor.fetchall()
+    conn.close()
+    return packages
+
+class SyrupHandler(BaseHTTPRequestHandler):
     def send_json_response(self, status_code, data):
         self.send_response(status_code)
         self.send_header('Content-Type', 'application/json')
