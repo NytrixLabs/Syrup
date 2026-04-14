@@ -1,0 +1,44 @@
+# Syrup Client Configuration
+# Edit this file to configure your syrup client
+
+# Server configuration
+server:
+  url: "http://localhost:8080"
+  # Alternative examples:
+  # url: "https://syrup.example.com"
+  # url: "http://192.168.1.100:8080"
+
+# Client settings
+client:
+  # Default directory for downloading packages
+  download_dir: "~/Downloads"
+  
+  # Whether to auto-confirm overwrites (use with caution)
+  auto_confirm: false
+  
+  # Temporary directory for extraction
+  temp_dir: "./temp_syrup"
+  
+  # Log level: debug, info, warning, error
+  log_level: "info"
+
+# Package settings
+package:
+  # Default archive format
+  format: "zip"
+  
+  # Whether to include hidden files
+  include_hidden: true
+
+# Authentication settings
+auth:
+  # Token file location (default: ~/.syrup_token)
+  token_file: "~/.syrup_token"
+  
+  # Auto-refresh token before expiry (if supported by server)
+  auto_refresh: true
+
+# Limits
+limits:
+  # Maximum package size in GB (default: 2GB)
+  max_package_size_gb: 2
